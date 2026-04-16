@@ -1,13 +1,12 @@
-
 <!DOCTYPE html>
 <html>
 <head>
-<title>Bible Tracker</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Bible Tracker</title>
 
 <style>
 body{
-font-family: Arial;
+font-family:Arial;
 background:#0b5ed7;
 color:white;
 text-align:center;
@@ -19,16 +18,17 @@ background:white;
 color:black;
 padding:20px;
 border-radius:15px;
-max-width:400px;
+max-width:420px;
 margin:auto;
 }
 
 button{
 background:#0b5ed7;
 color:white;
-padding:10px;
+padding:12px;
 border:none;
 border-radius:8px;
+margin:5px;
 }
 
 .progress{
@@ -44,6 +44,11 @@ height:10px;
 width:0%;
 border-radius:10px;
 }
+
+select{
+padding:8px;
+margin:10px;
+}
 </style>
 </head>
 
@@ -54,9 +59,14 @@ border-radius:10px;
 
 <div class="box">
 
+<select id="lang" onchange="changeLang()">
+<option value="en">English</option>
+<option value="te">Telugu</option>
+</select>
+
 <h3 id="today"></h3>
 
-<button onclick="done()">Mark Completed</button>
+<button onclick="done()" id="btn">Mark Completed</button>
 
 <div class="progress">
 <div class="bar" id="bar"></div>
@@ -68,28 +78,56 @@ border-radius:10px;
 
 <script>
 
-const bible=[
-"Genesis 1","Genesis 2","Genesis 3",
-"Matthew 1","Matthew 2",
-"John 1","Romans 1","Revelation 1"
+const bible = [
+"Genesis 1","Genesis 2","Genesis 3","Genesis 4","Genesis 5",
+"Exodus 1","Exodus 2","Exodus 3","Exodus 4",
+"Matthew 1","Matthew 2","Matthew 3","Matthew 4",
+"John 1","John 2","John 3",
+"Romans 1","Romans 2",
+"Revelation 1","Revelation 2"
 ];
 
-let doneList=JSON.parse(localStorage.getItem("done"))||[];
+let doneList = JSON.parse(localStorage.getItem("done")) || [];
 
-let today=bible[doneList.length];
+function update(){
+let today = bible[doneList.length];
+document.getElementById("today").innerText =
+getText("today") + " " + today;
 
-document.getElementById("today").innerText="Today's Reading: "+today;
+let p = Math.round((doneList.length/bible.length)*100);
+document.getElementById("bar").style.width = p + "%";
+document.getElementById("percent").innerText =
+doneList.length + " / " + bible.length;
+}
 
 function done(){
-doneList.push(today);
-localStorage.setItem("done",JSON.stringify(doneList));
+doneList.push(bible[doneList.length]);
+localStorage.setItem("done", JSON.stringify(doneList));
 update();
 }
 
-function update(){
-let p=Math.round((doneList.length/bible.length)*100);
-document.getElementById("bar").style.width=p+"%";
-document.getElementById("percent").innerText=p+"% completed";
+function getText(key){
+let lang = document.getElementById("lang").value;
+
+const text = {
+en:{
+today:"Today's Reading:",
+btn:"Mark Completed"
+},
+te:{
+today:"ఈరోజు చదవాలి:",
+btn:"పూర్తైంది"
+}
+};
+
+document.getElementById("btn").innerText =
+text[lang].btn;
+
+return text[lang][key];
+}
+
+function changeLang(){
+update();
 }
 
 update();
